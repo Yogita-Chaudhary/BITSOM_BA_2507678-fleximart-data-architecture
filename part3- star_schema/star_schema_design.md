@@ -65,11 +65,12 @@ Attributes:
 
 ## Section 2: Design Decisions
 
-The data warehouse is designed at the transaction line-item level, meaning that each row in the fact table represents one product sold in one order. This level of detail was chosen because it allows the business to analyze sales very flexibly. For example, it becomes easy to see which individual product is selling more, how discounts affect sales, or how customer behavior changes over time. If the data were stored only at a daily or monthly level, this type of detailed analysis would not be possible.
+The data warehouse is designed at the transaction line-item level, meaning that each record in the fact table represents a single product sold within an order. This level of granularity was selected because it allows detailed and flexible analysis of sales data. It enables the business to examine product performance, pricing trends, customer behavior, and the impact of discounts over time. If the data were aggregated at a higher level, such as monthly totals, many of these detailed insights would be lost.
 
-Surrogate keys are used instead of natural keys because they are stable and efficient. Natural keys like customer IDs or product IDs may change in operational systems, or may differ across data sources. Surrogate keys ensure that the warehouse remains consistent even if source system identifiers change. They also improve query performance because they are simple integers and join operations become faster.
+Surrogate keys have been used instead of natural keys to improve consistency and performance. Natural identifiers such as customer IDs or product codes may change in operational systems or may differ across data sources. Surrogate keys provide a stable and uniform way to link tables within the warehouse, and they also improve query efficiency because integer-based joins are faster.
 
-This star schema design supports drill-down and roll-up analysis very well. Analysts can easily drill down from yearly sales to quarterly, monthly, or even daily sales using the date dimension. Similarly, they can roll up product-level data to category-level or subcategory-level summaries. This makes the warehouse suitable for both high-level reporting and detailed analysis.
+This star schema structure supports both drill-down and roll-up analysis. Users can drill down from yearly to quarterly, monthly, and daily sales, or roll up detailed data into higher-level summaries, making the warehouse suitable for both operational and strategic reporting.
+
 
 ## Section 3: Sample Data Flow
 
@@ -86,8 +87,13 @@ fact_sales:
 - unit_price: 50000
 - total_amount: 100000
 
-dim_date: {date_key: 20240115, full_date: '2024-01-15', month: 1, quarter: 'Q1'}
+dim_date: {date_key: 20240115, full_date: '2024-01-15', month: 1, quarter: 'Q1', year: }
 
 dim_product: {product_key: 5, product_name: 'Laptop', category: 'Electronics'}
 
 dim_customer: {customer_key: 12, customer_name: 'John Doe', city: 'Mumbai'}
+
+
+
+
+

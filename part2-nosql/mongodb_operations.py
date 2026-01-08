@@ -49,7 +49,7 @@ for doc in collection.aggregate(pipeline):
   print(pd.DataFrame(list(doc)))
 
 
-# Operation 4 - Update Operation (2 marks)
+# Operation 4 - Update Operation 
 
 # Add a new review to product "ELEC001"
 # Review: {user: "U999", rating: 4, comment: "Good value", date: ISODate()}

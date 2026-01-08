@@ -46,7 +46,6 @@ mysql -u root -p fleximart_dw < warehouse_data.sql
 mysql -u root -p fleximart_dw < analytics_queries.sql
 
 ```
-
 ---
 
 ## Schema Design
