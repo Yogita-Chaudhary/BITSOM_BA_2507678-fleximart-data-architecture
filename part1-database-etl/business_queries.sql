@@ -6,15 +6,16 @@
 -- Expected to return customers with 2+ orders and >5000 spent
 
 SELECT CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
-    c.email, COUNT(o.order_id) AS total_orders,
+    c.email, 
+    COUNT(DISTINCT o.order_id) AS total_orders,
     SUM(o.total_amount) AS total_spent
-FROM customers c 
-INNER JOIN orders o
-ON c.customer_id = o.customer_id
+FROM fleximart_db.customers c 
+INNER JOIN fleximart_db.orders o ON c.customer_id = o.customer_id
+INNER JOIN fleximart_db.order_items ot ON o.order_id = ot.order_id
 GROUP BY customer_name, c.email
 HAVING total_orders >= 2 
-AND total_spent > 5000
-ORDER BY total_amount_spent DESC;
+	AND total_spent > 5000
+ORDER BY total_spent DESC;
 
 
 -- Query 2: Product Sales Analysis
@@ -24,10 +25,17 @@ ORDER BY total_amount_spent DESC;
 --                    Order by total revenue descending.
 -- Expected to return categories with >10000 revenue
 
-SELECT p.category, COUNT(DISTINCT ot.quantity) AS num_products,
-    COUNT(DISTINCT ot.quantity) AS total_quantity_sold, SUM(ot.unit_price * ot.quantity) AS total_revenue
-FROM products p RIGHT JOIN order_items order_items
+SELECT p.category, 
+	COUNT(DISTINCT p.product_id) AS num_products,
+    SUM(ot.quantity) AS total_quantity_sold, 
+    SUM(ot.subtotal) AS total_revenue
+FROM products p 
+INNER JOIN order_items ot
 ON p.product_id = ot.product_id
+GROUP BY p.category
+HAVING total_revenue > 10000
+ORDER BY total_revenue DESC;
+
 
 -- Query 3: Monthly Sales Trend
 -- Business Question: Show monthly sales trends for the year 2024. 
@@ -36,5 +44,23 @@ ON p.product_id = ot.product_id
 --                    January to that month)
 -- Expected to show monthly and cumulative revenue
 
-SELECT 
+-- Query 3: Monthly Sales Trend (with window function)
+
+SELECT
+    month_name,
+    total_orders,
+    monthly_revenue,
+    SUM(monthly_revenue) OVER (ORDER BY month_num) AS cumulative_revenue
+FROM (
+    SELECT
+        MONTH(o.order_date) AS month_num,
+        MONTHNAME(o.order_date) AS month_name,
+        COUNT(DISTINCT o.order_id) AS total_orders,
+        SUM(o.total_amount) AS monthly_revenue
+    FROM orders o
+    WHERE YEAR(o.order_date) = 2024
+    GROUP BY month_num, month_name
+) t
+ORDER BY month_num;
+
 
