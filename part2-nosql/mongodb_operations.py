@@ -45,8 +45,8 @@ pipeline = [
     {"$match": {"avg_rating": {"$gte": 4.0}}},
     {"$project": {"_id": 0, "product_id": 1, "name": 1, "category": 1, "avg_rating": 1}}
 ]
-for doc in collection.aggregate(pipeline):
-  print(pd.DataFrame(list(doc)))
+
+print(pd.DataFrame(list(collection.aggregate(pipeline))))
 
 
 # Operation 4 - Update Operation 
