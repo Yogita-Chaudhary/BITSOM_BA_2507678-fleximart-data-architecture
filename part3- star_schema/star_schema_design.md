@@ -74,26 +74,91 @@ This star schema structure supports both drill-down and roll-up analysis. Users 
 
 ## Section 3: Sample Data Flow
 
-**Source Transaction:**  
-Order #101, Customer "John Doe", Product "Laptop", Qty: 2, Price: 50000
+**1. Source Transaction (OLTP System)**
+A transaction is recorded in the operational sales system when a customer places an order.
 
-**Data Warehouse Representation:**
+Example source record:
+- Order ID: 101
+- Customer Name: John Doe
+- Product Name: Laptop
+- Quantity: 2
+- Unit Price: ₹50,000
+- Order Date: 2024-01-15
 
-fact_sales:
-- date_key: 20240115
-- product_key: 5
-- customer_key: 12
-- quantity_sold: 2
-- unit_price: 50000
-- total_amount: 100000
+Source system representation:
+orders:
+order_id = 101
+customer_name = 'John Doe'
+order_date = '2024-01-15'
 
-dim_date: {date_key: 20240115, full_date: '2024-01-15', month: 1, quarter: 'Q1', year: }
+order_items:
+order_id = 101
+product_name = 'Laptop'
+quantity = 2
+unit_price = 50000
 
-dim_product: {product_key: 5, product_name: 'Laptop', category: 'Electronics'}
+**2. ETL Transformation Process**
 
-dim_customer: {customer_key: 12, customer_name: 'John Doe', city: 'Mumbai'}
+During the ETL (Extract, Transform, Load) process:
+- Customer and product names are replaced with surrogate keys.
+- Date is converted into a numeric date_key.
+- Total amount is calculated.
+- Dimension tables are populated if the values do not already exist.
+
+**3. Data Warehouse Representation**
+Fact Table: fact_sales
+Stores measurable business events.
+
+**fact_sales:**
+{
+  date_key: 20240115,
+  product_key: 5,
+  customer_key: 12,
+  quantity_sold: 2,
+  unit_price: 50000,
+  total_amount: 100000
+}
+
+**Dimension Tables**
+Provide descriptive context for analysis.
+
+**dim_date**
+
+dim_date:
+{
+  date_key: 20240115,
+  full_date: '2024-01-15',
+  month: 1,
+  quarter: 'Q1',
+  year: 2024
+}
+
+**dim_product**
+
+dim_product:
+{
+  product_key: 5,
+  product_name: 'Laptop',
+  category: 'Electronics'
+}
 
 
+**dim_customer**
+
+dim_customer:
+{
+  customer_key: 12,
+  customer_name: 'John Doe',
+  city: 'Mumbai'
+}
+
+**4. Final Data Flow Summary**
+
+1. Transaction is created in the source system.
+2. ETL extracts the data.
+3. Business rules are applied (key mapping, date formatting, calculations).
+4. Cleaned and transformed data is loaded into fact and dimension tables.
+5. Data becomes available for analytics and reporting.
 
 
 
